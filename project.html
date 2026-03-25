@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="project.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <title>Project — Begüm Saral</title>
+</head>
+<body class="project-page">
+
+    <!-- ── NAV ── -->
+    <nav>
+        <a href="index.html" class="nav-name nav-name-link">Begüm Saral</a>
+        <div class="nav-links">
+            <span id="nav-project-title"></span>
+        </div>
+    </nav>
+
+    <!-- ── PROJECT CONTENT ── -->
+    <main id="projectContent">
+        <aside id="projectInfo">
+            <div id="projectMeta">
+                <span id="projectTag" class="proj-tag"></span>
+                <span id="projectYear" class="proj-year"></span>
+            </div>
+            <h1 id="projectTitle"></h1>
+            <p id="projectDesc"></p>
+            <ul id="projectTech" class="tech-list"></ul>
+            <a id="projectGithub" href="#" target="_blank" class="ext-link">GitHub ↗</a>
+        </aside>
+        <section id="projectImages"></section>
+    </main>
+
+    <script>
+        function loadProject() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            // Try sessionStorage first (works locally), fall back to re-reading from
+            // the embedded PROJECTS array via a shared script if needed.
+            let p = null;
+            try {
+                const stored = sessionStorage.getItem('currentProject');
+                if (stored) p = JSON.parse(stored);
+                // If the id doesn't match (e.g. direct URL navigation), try allProjects
+                if (!p || p.id !== id) {
+                    const all = JSON.parse(sessionStorage.getItem('allProjects') || '[]');
+                    p = all.find(x => x.id === id) || null;
+                }
+            } catch(e) {}
+
+            if (!p) {
+                document.getElementById('projectTitle').textContent = 'Project not found. Please navigate from the home page.';
+                return;
+            }
+
+            document.title = `${p.title} — Begüm Saral`;
+            document.getElementById('nav-project-title').textContent = p.title;
+            document.getElementById('projectTag').textContent = p.tag;
+            document.getElementById('projectYear').textContent = p.year;
+            document.getElementById('projectTitle').textContent = p.title;
+            document.getElementById('projectDesc').textContent = p.description;
+
+            const github = document.getElementById('projectGithub');
+            if (p.github) { github.href = p.github; }
+            else { github.style.display = 'none'; }
+
+            const techList = document.getElementById('projectTech');
+            (p.tech || []).forEach(t => {
+                const span = document.createElement('span');
+                span.textContent = t;
+                techList.appendChild(span);
+            });
+
+            const grid = document.getElementById('projectImages');
+            (p.images && p.images.length ? p.images : [p.cover]).forEach(src => {
+                const div = document.createElement('div');
+                div.className = 'grid-img';
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = p.title;
+                div.appendChild(img);
+                grid.appendChild(div);
+            });
+        }
+
+        loadProject();
+    </script>
+</body>
+</html>

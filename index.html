@@ -4,32 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <title>Begüm Saral</title>
-
 </head>
 <body>
 
-    <h1>Begüm Saral</h1>
-    <p>Architectural Robotics : Designer | Engineer</p>
+    <!-- ── NAV ── -->
+    <nav>
+        <span class="nav-name">Begüm Saral</span>
+        <div class="nav-links">
+            <button onclick="openPanel('bioPanel')">Bio</button>
+            <button onclick="openPanel('contactPanel')">Contact</button>
+        </div>
+    </nav>
 
-    <h2>About</h2>
-    <p>
-        Short intro about yourself. What you do, what you’re interested in.
-    </p>
-
-    <h2>Projects</h2>
-
-    <div class="project">
-        <h3>Project Title</h3>
-        <p>Short description of what it does.</p>
-        <a href="#">GitHub Link</a>
+    <!-- ── SCROLL STRIP ── -->
+    <div id="scrollStrip">
+        <div id="scrollTrack">
+            <!-- Populated by JS -->
+        </div>
     </div>
 
-    <h2>Contact</h2>
-    <p>
-        Email: saral.begum@gmail.com <br>
-        GitHub: <a href="#">yourprofile</a>
-    </p>
+    <!-- ── ARROW BUTTONS ── -->
+    <button class="scroll-arrow" id="arrowLeft" onclick="arrowScroll(-1)" aria-label="Scroll left">&#8592;</button>
+    <button class="scroll-arrow" id="arrowRight" onclick="arrowScroll(1)" aria-label="Scroll right">&#8594;</button>
 
+    <!-- ── BIO PANEL ── -->
+    <div class="panel" id="bioPanel">
+        <div class="panel-inner">
+            <button class="close-btn" onclick="closePanel('bioPanel')">Close</button>
+            <div class="panel-content">
+                <h2>Bio</h2>
+                <p>Your bio goes here. A few sentences about who you are, what you do, and what drives you. Architectural Robotics. Designer and engineer working at the intersection of space, computation, and movement.</p>
+                <p>Based in —. Previously at —. Currently working on —.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CONTACT PANEL ── -->
+    <div class="panel" id="contactPanel">
+        <div class="panel-inner">
+            <button class="close-btn" onclick="closePanel('contactPanel')">Close</button>
+            <div class="panel-content">
+                <h2>Contact</h2>
+                <p><a href="mailto:saral.begum@gmail.com">saral.begum@gmail.com</a></p>
+                <p><a href="https://github.com/begums" target="_blank">GitHub ↗</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── PROJECT DATA ──
+        // Edit this list to add/remove projects.
+        // 'cover' is the thumbnail shown in the scroll strip.
+        // 'images' are shown in the project detail page.
+        // All image paths are relative to index.html (e.g. "images/myfile.jpg")
+        const PROJECTS = [
+            {
+                id: "proj1",
+                title: "Robotic Deconstruction of Mortar-Bound Brickwork",
+                tag: "Robotics + Computer Vision",
+                year: "2024-25",
+                description: "Robotic deconstruction offers a precise and environmentally responsible alternative to conventional demolition, enabling the selective recovery of building materials for reuse. This research presents a methodology for robotic deconstruction enabled by Spatial Artificial Intelligence (Spatial AI), demonstrated through the case of brickwork. The approach comprises: (1) a deep learning-based real-time object perception system, trained on synthetic photorealistic data to detect and localise individual bricks; (2) the incremental registration and spatial mapping of these discrete elements within an evolving as-built digital twin; and (3) reasoning and control routines that enable perception- and mapping-informed, stepwise robotic deconstruction. The mortar-bound deconstruction project builds on the previous dry-stacked case study by moving the concept closer to real-world application, while addressing challenges such as brick perception with mortar occlusion, as well as robotic mortar removal, and brick detachment.",
+                tech: ["Spatial AI", "Material reclamation", "Deep learning-based object perception", "Synthetic photorealistic data generation"],
+                github: "https://github.com/begums",
+                cover: "images/Project_1_image_0.png",
+                images: ["images/Project_1_image_0.png"]
+            },
+            {
+                id: "proj2",
+                title: "Robotic Disassembly of Dry-stacked Brickwork",
+                tag: "Robotics + Computer Vision",
+                year: "2023-24",
+                description: "A longer description of this project. What problem does it solve? What was your role? What did you learn?",
+                tech: ["Grasshopper", "Rhino", "Python"],
+                github: "https://github.com/begums",
+                cover: "images/Project_2_image_0.png",
+                images: ["images/Project_2_image_0.png"]
+            },
+            {
+                id: "proj3",
+                title: "Augmented Construction Training",
+                tag: "Augmented Reality",
+                year: "2023",
+                description: "A longer description of this project. What problem does it solve? What was your role? What did you learn?",
+                tech: ["PyTorch", "SLAM", "C++"],
+                github: "https://github.com/begums",
+                cover: "images/Project_3_image_0.jpg",
+                images: ["images/Project_3_image_0.jpg"]
+            }
+        ];
+
+        // ── Build scroll strip ──
+        function buildStrip() {
+            const track = document.getElementById('scrollTrack');
+            PROJECTS.forEach((p, i) => {
+                const item = document.createElement('div');
+                item.className = 'project-item';
+                // Generate random width between min and max to create a dynamic, non-uniform strip
+                const minWidth = 800, maxWidth = 1000;
+                const randomWidth = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
+                item.onclick = () => {
+                    // Store project data for project.html to read
+                    sessionStorage.setItem('currentProject', JSON.stringify(p));
+                    sessionStorage.setItem('allProjects', JSON.stringify(PROJECTS));
+                    window.location.href = `project.html?id=${p.id}`;
+                };
+                item.innerHTML = `
+                    <div class="proj-label-top">
+                        <span class="proj-title-top">${p.title}, ${p.year}</span>
+                    </div>
+                    <div class="proj-img-wrap" style="width: ${randomWidth}px;">
+                        <img src="${p.cover}" alt="${p.title}" onerror="this.parentElement.classList.add('no-img')">
+                        <div class="proj-num">${String(i + 1).padStart(2, '0')}</div>
+                    </div>
+                `;
+                track.appendChild(item);
+            });
+            updateArrows();
+        }
+
+        // ── Panels ──
+        function openPanel(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePanel(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.querySelectorAll('.panel').forEach(panel => {
+            panel.addEventListener('click', e => {
+                if (e.target === panel) closePanel(panel.id);
+            });
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape')
+                document.querySelectorAll('.panel.active').forEach(p => closePanel(p.id));
+        });
+
+        // ── Arrow scroll ──
+        const strip = document.getElementById('scrollStrip');
+        const SCROLL_AMOUNT = 360;
+
+        function arrowScroll(dir) {
+            strip.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: 'smooth' });
+        }
+        function updateArrows() {
+            const atStart = strip.scrollLeft <= 0;
+            const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 2;
+            document.getElementById('arrowLeft').style.opacity = atStart ? '0.2' : '1';
+            document.getElementById('arrowRight').style.opacity = atEnd ? '0.2' : '1';
+        }
+        strip.addEventListener('scroll', updateArrows);
+
+        // ── Drag to scroll ──
+        let isDown = false, startX, scrollLeft;
+        strip.addEventListener('mousedown', e => {
+            isDown = true;
+            strip.style.cursor = 'grabbing';
+            startX = e.pageX - strip.offsetLeft;
+            scrollLeft = strip.scrollLeft;
+        });
+        strip.addEventListener('mouseleave', () => { isDown = false; strip.style.cursor = 'grab'; });
+        strip.addEventListener('mouseup', () => { isDown = false; strip.style.cursor = 'grab'; });
+        strip.addEventListener('mousemove', e => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - strip.offsetLeft;
+            strip.scrollLeft = scrollLeft - (x - startX) * 1.2;
+        });
+
+        buildStrip();
+    </script>
 </body>
 </html>
