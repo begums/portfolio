@@ -13,7 +13,7 @@
     <nav>
         <span class="nav-name">Begüm Saral</span>
         <div class="nav-links">
-            <button onclick="openPanel('bioPanel')">Bio</button>
+            <button onclick="openPanel('aboutPanel')">About</button>
             <button onclick="openPanel('contactPanel')">Contact</button>
         </div>
     </nav>
@@ -26,15 +26,15 @@
     </div>
 
     <!-- ── ARROW BUTTONS ── -->
-    <button class="scroll-arrow" id="arrowLeft" onclick="arrowScroll(-1)" aria-label="Scroll left">&#8592;</button>
-    <button class="scroll-arrow" id="arrowRight" onclick="arrowScroll(1)" aria-label="Scroll right">&#8594;</button>
+    <button class="scroll-arrow" id="arrowLeft" onclick="arrowScroll(-1)" aria-label="Scroll left">&lt;</button>
+    <button class="scroll-arrow" id="arrowRight" onclick="arrowScroll(1)" aria-label="Scroll right">&gt;</button>
 
-    <!-- ── BIO PANEL ── -->
-    <div class="panel" id="bioPanel">
+    <!-- ── ABOUT PANEL ── -->
+    <div class="panel" id="aboutPanel">
         <div class="panel-inner">
-            <button class="close-btn" onclick="closePanel('bioPanel')">Close</button>
+            <button class="close-btn" onclick="closePanel('aboutPanel')">Close</button>
             <div class="panel-content">
-                <h2>Bio</h2>
+                <h2>About</h2>
                 <p>Your bio goes here. A few sentences about who you are, what you do, and what drives you. Architectural Robotics. Designer and engineer working at the intersection of space, computation, and movement.</p>
                 <p>Based in —. Previously at —. Currently working on —.</p>
             </div>
@@ -66,8 +66,9 @@
                 tag: "Robotics + Computer Vision",
                 year: "2024-25",
                 description: "Robotic deconstruction offers a precise and environmentally responsible alternative to conventional demolition, enabling the selective recovery of building materials for reuse. This research presents a methodology for robotic deconstruction enabled by Spatial Artificial Intelligence (Spatial AI), demonstrated through the case of brickwork. The approach comprises: (1) a deep learning-based real-time object perception system, trained on synthetic photorealistic data to detect and localise individual bricks; (2) the incremental registration and spatial mapping of these discrete elements within an evolving as-built digital twin; and (3) reasoning and control routines that enable perception- and mapping-informed, stepwise robotic deconstruction. The mortar-bound deconstruction project builds on the previous dry-stacked case study by moving the concept closer to real-world application, while addressing challenges such as brick perception with mortar occlusion, as well as robotic mortar removal, and brick detachment.",
-                tech: ["Spatial AI", "Material reclamation", "Deep learning-based object perception", "Synthetic photorealistic data generation"],
+                keywords: ["Spatial AI", "Material reclamation", "Deep learning-based object perception", "Synthetic photorealistic data generation"],
                 github: "https://github.com/begums",
+                vimeo_id: "0000000",
                 cover: "images/Project_1_image_0.png",
                 images: ["images/Project_1_image_0.png"]
             },
@@ -77,7 +78,7 @@
                 tag: "Robotics + Computer Vision",
                 year: "2023-24",
                 description: "A longer description of this project. What problem does it solve? What was your role? What did you learn?",
-                tech: ["Grasshopper", "Rhino", "Python"],
+                keywords: ["Grasshopper", "Rhino", "Python"],
                 github: "https://github.com/begums",
                 cover: "images/Project_2_image_0.png",
                 images: ["images/Project_2_image_0.png"]
@@ -88,12 +89,23 @@
                 tag: "Augmented Reality",
                 year: "2023",
                 description: "A longer description of this project. What problem does it solve? What was your role? What did you learn?",
-                tech: ["PyTorch", "SLAM", "C++"],
+                keywords: ["PyTorch", "SLAM", "C++"],
                 github: "https://github.com/begums",
                 cover: "images/Project_3_image_0.jpg",
                 images: ["images/Project_3_image_0.jpg"]
             }
         ];
+
+        // ── Helper to update min-width for all images ──
+        function updateImageMinWidths() {
+            document.querySelectorAll('.proj-title-top').forEach(titleEl => {
+                const textWidth = titleEl.offsetWidth;
+                const imgWrap = titleEl.closest('.project-item').querySelector('.proj-img-wrap');
+                if (imgWrap && textWidth > 0) {
+                    imgWrap.style.minWidth = textWidth + 'px';
+                }
+            });
+        }
 
         // ── Build scroll strip ──
         function buildStrip() {
@@ -101,9 +113,11 @@
             PROJECTS.forEach((p, i) => {
                 const item = document.createElement('div');
                 item.className = 'project-item';
-                // Generate random width between min and max to create a dynamic, non-uniform strip
-                const minWidth = 800, maxWidth = 1000;
-                const randomWidth = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
+                // Generate random height between 40% and 90% of viewport (accounting for nav)
+                const screenHeight = window.innerHeight - 52;
+                const minHeight = screenHeight * 0.5;
+                const maxHeight = screenHeight * 0.9;
+                const randomHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
                 item.onclick = () => {
                     // Store project data for project.html to read
                     sessionStorage.setItem('currentProject', JSON.stringify(p));
@@ -114,14 +128,20 @@
                     <div class="proj-label-top">
                         <span class="proj-title-top">${p.title}, ${p.year}</span>
                     </div>
-                    <div class="proj-img-wrap" style="width: ${randomWidth}px;">
+                    <div class="proj-img-wrap" style="height: ${randomHeight}px;">
                         <img src="${p.cover}" alt="${p.title}" onerror="this.parentElement.classList.add('no-img')">
                         <div class="proj-num">${String(i + 1).padStart(2, '0')}</div>
                     </div>
                 `;
                 track.appendChild(item);
             });
-            updateArrows();
+            // Measure and set image min-widths immediately and after images load
+            updateImageMinWidths();
+            document.querySelectorAll('.proj-img-wrap img').forEach(img => {
+                img.addEventListener('load', updateImageMinWidths);
+            });
+            // Delay updateArrows to allow DOM to calculate scroll dimensions
+            setTimeout(updateArrows, 100);
         }
 
         // ── Panels ──
@@ -153,8 +173,8 @@
         function updateArrows() {
             const atStart = strip.scrollLeft <= 0;
             const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 2;
-            document.getElementById('arrowLeft').style.opacity = atStart ? '0.2' : '1';
-            document.getElementById('arrowRight').style.opacity = atEnd ? '0.2' : '1';
+            document.getElementById('arrowLeft').style.display = atStart ? 'none' : 'flex';
+            document.getElementById('arrowRight').style.display = atEnd ? 'none' : 'flex';
         }
         strip.addEventListener('scroll', updateArrows);
 
@@ -173,6 +193,25 @@
             e.preventDefault();
             const x = e.pageX - strip.offsetLeft;
             strip.scrollLeft = scrollLeft - (x - startX) * 1.2;
+        });
+
+        // ── Mouse wheel scroll ──
+        strip.addEventListener('wheel', e => {
+            e.preventDefault();
+            strip.scrollLeft += e.deltaY * 0.5;
+        }, { passive: false });
+
+        // ── Resize handler ──
+        window.addEventListener('resize', () => {
+            const screenHeight = window.innerHeight - 52;
+            const minHeight = screenHeight * 0.4;
+            const maxHeight = screenHeight * 0.9;
+            document.querySelectorAll('.proj-img-wrap').forEach(wrap => {
+                const randomHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+                wrap.style.height = randomHeight + 'px';
+            });
+            // Re-measure text widths on resize
+            updateImageMinWidths();
         });
 
         buildStrip();
