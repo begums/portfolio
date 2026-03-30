@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/brick-icon.png">
     <title>Begüm Saral</title>
 </head>
 <body>
 
     <!-- ── NAV ── -->
     <nav>
-        <span class="nav-name">Begüm Saral</span>
+        <a href="index.html" class="nav-name" style="text-decoration: none; color: inherit; cursor: pointer;">Begüm Saral</a>
         <div class="nav-links">
-            <button onclick="openPanel('aboutPanel')">About</button>
+            <button onclick="window.location.href='information.html'">Information,</button>
             <button onclick="openPanel('contactPanel')">Contact</button>
         </div>
     </nav>
@@ -22,22 +23,6 @@
     <div id="scrollStrip">
         <div id="scrollTrack">
             <!-- Populated by JS -->
-        </div>
-    </div>
-
-    <!-- ── ARROW BUTTONS ── -->
-    <button class="scroll-arrow" id="arrowLeft" onclick="arrowScroll(-1)" aria-label="Scroll left">&lt;</button>
-    <button class="scroll-arrow" id="arrowRight" onclick="arrowScroll(1)" aria-label="Scroll right">&gt;</button>
-
-    <!-- ── ABOUT PANEL ── -->
-    <div class="panel" id="aboutPanel">
-        <div class="panel-inner">
-            <button class="close-btn" onclick="closePanel('aboutPanel')">Close</button>
-            <div class="panel-content">
-                <h2>About</h2>
-                <p>Your bio goes here. A few sentences about who you are, what you do, and what drives you. Architectural Robotics. Designer and engineer working at the intersection of space, computation, and movement.</p>
-                <p>Based in —. Previously at —. Currently working on —.</p>
-            </div>
         </div>
     </div>
 
@@ -110,6 +95,8 @@
         // ── Build scroll strip ──
         function buildStrip() {
             const track = document.getElementById('scrollTrack');
+            const originalItems = [];
+            
             PROJECTS.forEach((p, i) => {
                 const item = document.createElement('div');
                 item.className = 'project-item';
@@ -118,9 +105,14 @@
                 const minHeight = screenHeight * 0.5;
                 const maxHeight = screenHeight * 0.9;
                 const randomHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+                
+                // Store project data on the element for easy access
+                item.dataset.projectId = p.id;
+                item.dataset.projectData = JSON.stringify(p);
+                
                 item.onclick = () => {
                     // Store project data for project.html to read
-                    sessionStorage.setItem('currentProject', JSON.stringify(p));
+                    sessionStorage.setItem('currentProject', item.dataset.projectData);
                     sessionStorage.setItem('allProjects', JSON.stringify(PROJECTS));
                     window.location.href = `project.html?id=${p.id}`;
                 };
@@ -134,14 +126,25 @@
                     </div>
                 `;
                 track.appendChild(item);
+                originalItems.push({element: item, projectData: p});
             });
+            
+            // Clone all items for seamless looping and re-attach onclick handlers
+            originalItems.forEach(({element, projectData: p}) => {
+                const clone = element.cloneNode(true);
+                clone.onclick = () => {
+                    sessionStorage.setItem('currentProject', JSON.stringify(p));
+                    sessionStorage.setItem('allProjects', JSON.stringify(PROJECTS));
+                    window.location.href = `project.html?id=${p.id}`;
+                };
+                track.appendChild(clone);
+            });
+            
             // Measure and set image min-widths immediately and after images load
             updateImageMinWidths();
             document.querySelectorAll('.proj-img-wrap img').forEach(img => {
                 img.addEventListener('load', updateImageMinWidths);
             });
-            // Delay updateArrows to allow DOM to calculate scroll dimensions
-            setTimeout(updateArrows, 100);
         }
 
         // ── Panels ──
@@ -163,24 +166,40 @@
                 document.querySelectorAll('.panel.active').forEach(p => closePanel(p.id));
         });
 
-        // ── Arrow scroll ──
+        // ── Scroll strip behavior ──
         const strip = document.getElementById('scrollStrip');
         const SCROLL_AMOUNT = 360;
+        const AUTO_SCROLL_SPEED = 0.5; // pixels per frame
+        let autoScrollActive = true;
+        let autoScrollTimeout;
+        let animationId;
+        let baseWidth = 0; // Will be set after buildStrip
 
-        function arrowScroll(dir) {
-            strip.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: 'smooth' });
+        // ── Auto-scroll function ──
+        function autoScroll() {
+            if (autoScrollActive) {
+                strip.scrollLeft += AUTO_SCROLL_SPEED;
+                // Seamless loop: reset to start when halfway through (cloned content)
+                if (strip.scrollLeft >= baseWidth) {
+                    strip.scrollLeft = 0;
+                }
+            }
+            animationId = requestAnimationFrame(autoScroll);
         }
-        function updateArrows() {
-            const atStart = strip.scrollLeft <= 0;
-            const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 2;
-            document.getElementById('arrowLeft').style.display = atStart ? 'none' : 'flex';
-            document.getElementById('arrowRight').style.display = atEnd ? 'none' : 'flex';
+
+        // ── Pause auto-scroll and restart after timeout ──
+        function pauseAutoScroll() {
+            autoScrollActive = false;
+            clearTimeout(autoScrollTimeout);
+            autoScrollTimeout = setTimeout(() => {
+                autoScrollActive = true;
+            }, 3000); // Resume after 3 seconds of no user interaction
         }
-        strip.addEventListener('scroll', updateArrows);
 
         // ── Drag to scroll ──
         let isDown = false, startX, scrollLeft;
         strip.addEventListener('mousedown', e => {
+            pauseAutoScroll();
             isDown = true;
             strip.style.cursor = 'grabbing';
             startX = e.pageX - strip.offsetLeft;
@@ -197,6 +216,7 @@
 
         // ── Mouse wheel scroll ──
         strip.addEventListener('wheel', e => {
+            pauseAutoScroll();
             e.preventDefault();
             strip.scrollLeft += e.deltaY * 0.5;
         }, { passive: false });
@@ -215,6 +235,11 @@
         });
 
         buildStrip();
+        // Calculate baseWidth (width of original content before cloning) and start auto-scroll
+        setTimeout(() => {
+            baseWidth = strip.scrollWidth / 2; // Since content is cloned, original is half
+            autoScroll(); // Start auto-scrolling animation
+        }, 100);
     </script>
 </body>
 </html>

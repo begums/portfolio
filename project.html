@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="project.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300;400&display=swap" rel="stylesheet">
     <title>Project — Begüm Saral</title>
 </head>
 <body class="project-page">
@@ -14,7 +14,8 @@
     <nav>
         <a href="index.html" class="nav-name nav-name-link">Begüm Saral</a>
         <div class="nav-links">
-            <span id="nav-project-title"></span>
+            <button onclick="window.location.href='information.html'">Information,</button>
+            <button onclick="openPanel('contactPanel')">Contact</button>
         </div>
     </nav>
 
@@ -40,6 +41,18 @@
             <button class="lightbox-nav lightbox-prev" onclick="lightboxPrev()">&lt;</button>
             <button class="lightbox-nav lightbox-next" onclick="lightboxNext()">&gt;</button>
             <button class="lightbox-close" onclick="closeLightbox()">×</button>
+        </div>
+    </div>
+
+    <!-- ── CONTACT PANEL ── -->
+    <div class="panel" id="contactPanel">
+        <div class="panel-inner">
+            <button class="close-btn" onclick="closePanel('contactPanel')">Close</button>
+            <div class="panel-content">
+                <h2>Contact</h2>
+                <p><a href="mailto:saral.begum@gmail.com">saral.begum@gmail.com</a></p>
+                <p><a href="https://github.com/begums" target="_blank">GitHub ↗</a></p>
+            </div>
         </div>
     </div>
 
@@ -70,7 +83,6 @@
             currentProject = p;
 
             document.title = `${p.title} — Begüm Saral`;
-            document.getElementById('nav-project-title').textContent = p.title;
             document.getElementById('projectTag').textContent = p.tag;
             document.getElementById('projectYear').textContent = p.year;
             document.getElementById('projectTitle').textContent = p.title;
@@ -173,6 +185,9 @@
             }
         }
 
+        // Close lightbox when clicking the background
+        document.getElementById('lightbox').addEventListener('click', closeLightbox);
+
         // Close on Esc, navigate with arrow keys
         document.addEventListener('keydown', e => {
             const lightbox = document.getElementById('lightbox');
@@ -181,6 +196,25 @@
                 if (e.key === 'ArrowRight') lightboxNext();
                 if (e.key === 'ArrowLeft') lightboxPrev();
             }
+        });
+
+        // ── Panel functions ──
+        function openPanel(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePanel(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.querySelectorAll('.panel').forEach(panel => {
+            panel.addEventListener('click', e => {
+                if (e.target === panel) closePanel(panel.id);
+            });
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape')
+                document.querySelectorAll('.panel.active').forEach(p => closePanel(p.id));
         });
 
         loadProject();

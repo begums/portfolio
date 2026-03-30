@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300;400&display=swap" rel="stylesheet">
+    <title>Information | Begüm Saral</title>
+</head>
+<body>
+
+    <!-- ── NAV ── -->
+    <nav>
+        <a href="index.html" class="nav-name" style="text-decoration: none; color: inherit; cursor: pointer;">Begüm Saral</a>
+        <div class="nav-links">
+            <button onclick="window.location.href='information.html'">Information,</button>
+            <button onclick="openPanel('contactPanel')">Contact</button>
+        </div>
+    </nav>
+
+    <!-- ── INFORMATION PAGE ── -->
+    <div id="informationPage">
+        <div class="info-container">
+            <h1>Begüm Saral</h1>
+            <div class="info-content">
+                <p>Your bio goes here. A few sentences about who you are, what you do, and what drives you. Architectural Robotics. Designer and engineer working at the intersection of space, computation, and movement.</p>
+                <p>Based in —. Previously at —. Currently working on —.</p>
+            </div>
+            <div class="info-image">
+                <img src="images/placeholder.jpg" alt="Placeholder" onerror="this.style.opacity='0.3'">
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CONTACT PANEL ── -->
+    <div class="panel" id="contactPanel">
+        <div class="panel-inner">
+            <button class="close-btn" onclick="closePanel('contactPanel')">Close</button>
+            <div class="panel-content">
+                <h2>Contact</h2>
+                <p><a href="mailto:saral.begum@gmail.com">saral.begum@gmail.com</a></p>
+                <p><a href="https://github.com/begums" target="_blank">GitHub ↗</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Panels ──
+        function openPanel(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePanel(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.querySelectorAll('.panel').forEach(panel => {
+            panel.addEventListener('click', e => {
+                if (e.target === panel) closePanel(panel.id);
+            });
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape')
+                document.querySelectorAll('.panel.active').forEach(p => closePanel(p.id));
+        });
+    </script>
+</body>
+</html>
