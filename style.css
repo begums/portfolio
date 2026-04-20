@@ -350,17 +350,16 @@ nav {
 
 .info-image {
     width: 100%;
-    max-width: 500px;
+    max-width: 350px;
     aspect-ratio: 1;
-    background: #f0f0f0;
-    border: 1px solid #ddd;
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .info-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 

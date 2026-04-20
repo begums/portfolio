@@ -22,7 +22,7 @@ body.project-page {
 /* ── Main layout: fixed left panel, scrollable right grid ── */
 #projectContent {
     display: grid;
-    grid-template-columns: 480px 1fr;
+    grid-template-columns: 550px 1fr;
     min-height: calc(100vh - 52px);
     margin-top: 52px;
 }
@@ -111,19 +111,43 @@ body.project-page {
 /* ── Right image grid ── */
 #projectImages {
     padding: 32px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    align-content: start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    row-gap: 20px;
+    align-items: stretch;
     position: relative;
 }
 
 .grid-item {
     cursor: pointer;
     background: transparent;
-    overflow: hidden;
-    aspect-ratio: 1;
+    overflow: visible;
     position: relative;
+    height: 400px;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-item.multi-col {
+    flex: 0 0 auto;
+}
+
+.force-break {
+    flex-basis: 100%;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+.grid-item.after-break {
+    /* no special styling */
+}
+
+.grid-item.force-break {
+    /* no special styling needed */
 }
 
 .grid-item img, .grid-item iframe {
@@ -133,10 +157,50 @@ body.project-page {
     display: block;
     transition: transform 0.5s ease;
     filter: grayscale(10%);
+    border: none;
+}
+
+.grid-item-caption {
+    font-size: 0.9rem;
+    color: var(--ink);
+    margin-top: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.grid-item.multi-col img, .grid-item.multi-col iframe {
+    max-width: 95%;
+    max-height: 95%;
 }
 .grid-item:hover img, .grid-item:hover iframe {
     transform: scale(1.03);
     filter: grayscale(0%);
+}
+
+.grid-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.play-button {
+    width: 60px;
+    height: 60px;
+    background: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.grid-item:hover .play-button {
+    transform: scale(1.1);
 }
 
 /* ── Lightbox overlay ── */
@@ -181,6 +245,7 @@ body.project-page {
     max-width: 85%;
     max-height: 100%;
     object-fit: contain;
+    border: none;
 }
 
 .lightbox-nav {

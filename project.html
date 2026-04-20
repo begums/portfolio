@@ -28,8 +28,8 @@
             </div>
             <h1 id="projectTitle"></h1>
             <p id="projectDesc"></p>
-            <ul id="projectTech" class="tech-list"></ul>
             <p id="projectPublications" class="project-publications"></p>
+            <ul id="projectTech" class="tech-list"></ul>
         </aside>
         <section id="projectImages"></section>
     </main>
@@ -50,8 +50,10 @@
             <button class="close-btn" onclick="closePanel('contactPanel')">Close</button>
             <div class="panel-content">
                 <h2>Contact</h2>
+                <p><a href="mailto:begum.saral@tum.de">begum.saral@tum.de</a></p>
                 <p><a href="mailto:saral.begum@gmail.com">saral.begum@gmail.com</a></p>
                 <p><a href="https://github.com/begums" target="_blank">GitHub ↗</a></p>
+                <p><a href="https://www.linkedin.com/in/begum-saral/" target="_blank">LinkedIn ↗</a></p>
             </div>
         </div>
     </div>
@@ -97,7 +99,7 @@
 
             const pubsElement = document.getElementById('projectPublications');
             if (p.publications) {
-                pubsElement.textContent = p.publications;
+                pubsElement.innerHTML = p.publications;
             } else {
                 pubsElement.style.display = 'none';
             }
@@ -111,32 +113,137 @@
                 vimeoDiv.className = 'grid-item';
                 const vimeoIndex = allMediaItems.length;
                 vimeoDiv.onclick = () => openLightbox(vimeoIndex);
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://player.vimeo.com/video/${p.vimeo_id}?h=`;
-                iframe.width = '100%';
-                iframe.height = '100%';
-                iframe.frameborder = '0';
-                iframe.allowFullscreen = true;
-                iframe.allow = 'autoplay';
-                iframe.style.pointerEvents = 'none';
-                vimeoDiv.appendChild(iframe);
+                
+                // Fetch Vimeo thumbnail
+                let thumbnailLoaded = false;
+                fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${p.vimeo_id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const img = document.createElement('img');
+                        img.src = data.thumbnail_url;
+                        img.alt = 'Video thumbnail';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'contain';
+                        vimeoDiv.appendChild(img);
+                        thumbnailLoaded = true;
+                    })
+                    .catch(() => {
+                        // No thumbnail available - show black box
+                        if (!thumbnailLoaded) {
+                            vimeoDiv.style.background = '#1a1a1a';
+                            vimeoDiv.style.minHeight = '400px';
+                        }
+                    });
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'grid-item-overlay';
+                
+                const playButton = document.createElement('div');
+                playButton.className = 'play-button';
+                playButton.innerHTML = '▶';
+                playButton.style.color = '#fff';
+                playButton.style.fontSize = '24px';
+                playButton.style.lineHeight = '1';
+                
+                overlay.appendChild(playButton);
+                vimeoDiv.appendChild(overlay);
                 grid.appendChild(vimeoDiv);
                 allMediaItems.push({ type: 'vimeo', vimeo_id: p.vimeo_id });
             }
 
-            // Add images
-            (p.images && p.images.length ? p.images : [p.cover]).forEach(src => {
+            // Add images (supports both array and object formats)
+            if (p.images) {
+                const isObjectFormat = !Array.isArray(p.images);
+                
+                if (isObjectFormat) {
+                    // Object format with grid positions
+                    let lastWasBreak = false;
+                    Object.values(p.images).forEach(item => {
+                        if (item.breakLine) {
+                            const spacer = document.createElement('div');
+                            spacer.className = 'force-break';
+                            grid.appendChild(spacer);
+                            lastWasBreak = true;
+                            return;
+                        }
+                        
+                        const div = document.createElement('div');
+                        div.className = 'grid-item' + (item.colSpan && item.colSpan > 1 ? ' multi-col' : '') + (lastWasBreak ? ' after-break' : '');
+                        lastWasBreak = false;
+                        const imageIndex = allMediaItems.length;
+                        div.onclick = () => openLightbox(imageIndex);
+                        const img = document.createElement('img');
+                        img.src = item.src;
+                        img.alt = p.title;
+                        div.appendChild(img);
+                        if (item.caption) {
+                            const caption = document.createElement('div');
+                            caption.className = 'grid-item-caption';
+                            caption.textContent = item.caption;
+                            div.appendChild(caption);
+                        }
+                        grid.appendChild(div);
+                        allMediaItems.push({ type: 'image', src: item.src });
+                    });
+                } else {
+                    // Array format (backward compatible)
+                    p.images.forEach((item, idx) => {
+                        // Support both string format and object format with breakLine
+                        const src = typeof item === 'string' ? item : item.src;
+                        const breakLine = typeof item === 'object' && item.breakLine;
+                        
+                        // Track if next item should be marked as after-break
+                        if (breakLine) {
+                            const spacer = document.createElement('div');
+                            spacer.className = 'force-break';
+                            grid.appendChild(spacer);
+                        }
+                        
+                        if (typeof item === 'string') {
+                            // String items can't be marked as after-break since there's no breakLine info
+                            const div = document.createElement('div');
+                            div.className = 'grid-item';
+                            const imageIndex = allMediaItems.length;
+                            div.onclick = () => openLightbox(imageIndex);
+                            const img = document.createElement('img');
+                            img.src = item;
+                            img.alt = p.title;
+                            div.appendChild(img);
+                            grid.appendChild(div);
+                            allMediaItems.push({ type: 'image', src: item });
+                        } else {
+                            const div = document.createElement('div');
+                            div.className = 'grid-item';
+                            const imageIndex = allMediaItems.length;
+                            div.onclick = () => openLightbox(imageIndex);
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.alt = p.title;
+                            div.appendChild(img);
+                            if (item.caption) {
+                                const caption = document.createElement('div');
+                                caption.className = 'grid-item-caption';
+                                caption.textContent = item.caption;
+                                div.appendChild(caption);
+                            }
+                            grid.appendChild(div);
+                            allMediaItems.push({ type: 'image', src: src });
+                        }
+                    });
+                }
+            } else if (p.cover) {
                 const div = document.createElement('div');
                 div.className = 'grid-item';
                 const imageIndex = allMediaItems.length;
                 div.onclick = () => openLightbox(imageIndex);
                 const img = document.createElement('img');
-                img.src = src;
+                img.src = p.cover;
                 img.alt = p.title;
                 div.appendChild(img);
                 grid.appendChild(div);
-                allMediaItems.push({ type: 'image', src: src });
-            });
+                allMediaItems.push({ type: 'image', src: p.cover });
+            }
         }
 
         function openLightbox(index) {
@@ -152,11 +259,13 @@
         }
 
         function lightboxNext() {
+            event.stopPropagation();
             currentMediaIndex = (currentMediaIndex + 1) % allMediaItems.length;
             updateLightbox();
         }
 
         function lightboxPrev() {
+            event.stopPropagation();
             currentMediaIndex = (currentMediaIndex - 1 + allMediaItems.length) % allMediaItems.length;
             updateLightbox();
         }
@@ -185,8 +294,13 @@
             }
         }
 
-        // Close lightbox when clicking the background
-        document.getElementById('lightbox').addEventListener('click', closeLightbox);
+        // Close lightbox when clicking the image or background
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            // Close on any click except the nav buttons
+            if (!e.target.closest('.lightbox-nav')) {
+                closeLightbox();
+            }
+        });
 
         // Close on Esc, navigate with arrow keys
         document.addEventListener('keydown', e => {

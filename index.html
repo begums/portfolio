@@ -32,8 +32,10 @@
             <button class="close-btn" onclick="closePanel('contactPanel')">Close</button>
             <div class="panel-content">
                 <h2>Contact</h2>
+                <p><a href="mailto:begum.saral@tum.de">begum.saral@tum.de</a></p>
                 <p><a href="mailto:saral.begum@gmail.com">saral.begum@gmail.com</a></p>
                 <p><a href="https://github.com/begums" target="_blank">GitHub ↗</a></p>
+                <p><a href="https://www.linkedin.com/in/begum-saral/" target="_blank">LinkedIn ↗</a></p>
             </div>
         </div>
     </div>
@@ -48,36 +50,58 @@
             {
                 id: "proj1",
                 title: "Robotic Deconstruction of Mortar-Bound Brickwork",
-                tag: "Robotics + Computer Vision",
+                tag: "Mobile Robotics + Computer Vision",
                 year: "2024-25",
                 description: "Robotic deconstruction offers a precise and environmentally responsible alternative to conventional demolition, enabling the selective recovery of building materials for reuse. This research presents a methodology for robotic deconstruction enabled by Spatial Artificial Intelligence (Spatial AI), demonstrated through the case of brickwork. The approach comprises: (1) a deep learning-based real-time object perception system, trained on synthetic photorealistic data to detect and localise individual bricks; (2) the incremental registration and spatial mapping of these discrete elements within an evolving as-built digital twin; and (3) reasoning and control routines that enable perception- and mapping-informed, stepwise robotic deconstruction. The mortar-bound deconstruction project builds on the previous dry-stacked case study by moving the concept closer to real-world application, while addressing challenges such as brick perception with mortar occlusion, as well as robotic mortar removal, and brick detachment.",
                 keywords: ["Spatial AI", "Material reclamation", "Deep learning-based object perception", "Synthetic photorealistic data generation"],
-                github: "https://github.com/begums",
-                vimeo_id: "0000000",
-                cover: "images/Project_1_image_0.png",
-                images: ["images/Project_1_image_0.png"]
+                cover: "images/deconstruction/Figure_3.png",
+                images: [
+                    { src: "images/deconstruction/Figure_1.png", caption: "drill" },
+                    { src: "images/deconstruction/Figure_2.png", caption: "pick" },
+                    { src: "images/deconstruction/Figure_3.png", caption: "detach" },
+                    { src: "images/deconstruction/Figure_4.png", breakLine: true, caption: "synthetic data generation" },
+                    { src: "images/deconstruction/Figure_5.png", caption: "brick detection + pose estimation" },
+                    { src: "images/deconstruction/Figure_7.png", caption: "stepwise deconstruction" },
+                    { src: "images/deconstruction/Figure_9.png", breakLine: true, caption: "as-built digital twin generation" }
+                ]
             },
             {
                 id: "proj2",
                 title: "Robotic Disassembly of Dry-stacked Brickwork",
-                tag: "Robotics + Computer Vision",
+                tag: "Mobile Robotics + Computer Vision",
                 year: "2023-24",
-                description: "A longer description of this project. What problem does it solve? What was your role? What did you learn?",
-                keywords: ["Grasshopper", "Rhino", "Python"],
-                github: "https://github.com/begums",
-                cover: "images/Project_2_image_0.png",
-                images: ["images/Project_2_image_0.png"]
+                description: "Within the context of advancing material reuse and circularity in building construction, the careful dismantling of building structures is a crucial step in salvaging materials. Our research is focused on illustrating the potential of Spatial Artificial Intelligence (Spatial AI)-integrated mobile robotic systems to facilitate and streamline such a careful process of autonomous dismantling. In this pursuit, we present a case study that tests and evaluates methods for the autonomous robotic disassembly of a dry-stacked brick structure of unknown geometry carried out by a mobile robot. By utilizing deep learning-based object-level localization using the onboard sensing capabilities of a hand-in-eye RGB-D camera, a mobile robotic system is designed to detect and localize individual objects, in this case, bricks, within a complex brickwork structure. This information is subsequently employed within the robotic disassembly routine, further encompassing several critical components, including path planning, collision avoidance, and robotic control, all contributing to a seamless disassembly process. Furthermore, our exploration extends its scope to the possibility of capturing and documenting the current as well as the evolving state of the disassembled building structure through digital twins, opening new avenues for efficient and transparent deconstruction processes that align with the goals of material reuse and circularity.",
+                publications: "Mobile Robotic Brickwork Disassembly for Material Reuse, B. Saral, H. Chen, S. Leutenegger, and K. Dörfler, Rob|Arch24 Conference, 2024 (forthcoming). New Frontiers Runner-up Award.",
+                keywords: ["Spatial AI", "Material reclamation", "Deep learning-based object perception", "Synthetic photorealistic data generation"],
+                vimeo_id: "1109961831",
+                cover: "images/disassembly/Figure_1.png",
+                images: [
+                    { src: "images/disassembly/Figure_2.png", caption: "mobile robotic disassembly" },
+                    { src: "images/disassembly/Figure_5.png", breakLine: true, caption: "brick detection" },
+                    { src: "images/disassembly/Figure_6.png", caption: "pose estimation" },
+                    { src: "images/disassembly/Figure_3.png", breakLine: true, caption: "as-built digital twin generation" },
+                    { src: "images/disassembly/Figure_4.png", caption: "synthetic data generation" },
+                ]
             },
             {
                 id: "proj3",
                 title: "Augmented Construction Training",
                 tag: "Augmented Reality",
-                year: "2023",
-                description: "A longer description of this project. What problem does it solve? What was your role? What did you learn?",
-                keywords: ["PyTorch", "SLAM", "C++"],
-                github: "https://github.com/begums",
-                cover: "images/Project_3_image_0.jpg",
-                images: ["images/Project_3_image_0.jpg"]
+                year: "2022",
+                description: "Increasing world population and climate disasters evoke the need for reliable housing construction, creating a demand for rapid training strategies for craftspeople. Conventional construction training methods, typically consisting of 2D plans, manuals, and personal instructions, often lack the spatial and temporal complexity of specific craftwork. This makes it difficult to meet current demands quickly and sustainably. Augmented Reality (AR) technology, which involves overlaying digital information onto real-world environments, offers an alternative to conventional documentation and representation, making it suitable for construction training purposes. AR can enhance spatial comprehension, provide step-by-step temporal guidance, and simplify navigation between different levels of information, which is particularly beneficial for vernacular building methods that use irregular materials such as bamboo. In this project, we present our research on utilizing mobile AR technology in the context of construction training. The objective is to offer visual guidance for carrying out a dedicated building process without dictating, giving craftspeople necessary technical information but also space for creative amendment, thereby exceeding the bounds of normative building. The primary case study focuses on a Philippines-based foundation that teaches local craftspeople a vernacular-inspired bamboo assembly building method for affordable housing. We developed an AR app to support their trainees, involving firstly modeling the building process for prefabricated bamboo panels as a graph-map data structure based on time-based actions and, secondly, designing a learning journey with a custom user interface tailored to meet the unique challenges of the case study. A set of online training sessions and an on-site user study have been conducted to measure the app’s success factors, such as user engagement, adoption, user autonomy, and productivity gain among local craftspeople. This user study has also illuminated the emergence of new relationships between various stakeholders—designers, planners, production managers, and craftspeople—caused by newly adopted technologies intervening with traditional crafts and the social, cultural, and personal changes they could bring.",
+                keywords: ["Augmented Reality", "Construction training", "Building process modeling"],
+                publications: "<strong>Saral, B.</strong> (2022). <em>Alternative Representation Methods in Construction and Training: AR App for Guiding Bamboo Assembly in Low-cost Housing Construction in the Global South.</em> Master's thesis, Technische Universität München. <a href='https://mediatum.ub.tum.de/69514?query=saral&show_id=1702064&srcnodeid=69514' target='_blank'>View on MediaTUM ↗</a>",
+                vimeo_id: "757760331",
+                cover: "images/augmented-training/Figure_1.jpg",
+                images: [
+                    { src: "images/augmented-training/Figure_1.jpg", caption: "" },
+                    { src: "images/augmented-training/Figure_2.jpg", caption: "AR-based visual guidance for construction training" },
+                    { src: "images/augmented-training/Figure_3.jpg", caption: "building process modeling as a graph-map data structure" },
+                    { src: "images/augmented-training/Figure_4.jpg", caption: "custom user interface design for the case study" },
+                    { src: "images/augmented-training/Figure_5.jpg", caption: "user study results" },
+                    { src: "images/augmented-training/Figure_6.jpg", caption: "implementation of the AR app" },
+                    { src: "images/augmented-training/Figure_7.jpg", caption: "user engagement and adoption metrics" },
+                ]
             }
         ];
 
